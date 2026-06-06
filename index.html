@@ -24,7 +24,11 @@
     .hero{display:none;place-items:center;text-align:center}.hero.active{display:grid}.hero h1{font-size:clamp(52px,7vw,96px);line-height:1.08;margin:.08em 0;color:var(--terra2)}
     h1,h2,h3{font-family:var(--font-hand);font-weight:700;line-height:1.18;margin:0;color:var(--ink)}h2{font-size:clamp(38px,4.6vw,66px)}p,li{font-size:clamp(21px,2vw,30px);line-height:1.46}p{margin:.2em 0 .55em}strong{color:var(--terra2)}em{font-style:normal;color:var(--sage);font-weight:700}code{font-family:var(--font-mono);background:var(--code);color:#f8e9c8;border-radius:8px;padding:.08em .36em;font-size:.9em}pre{background:var(--code);color:#f8e9c8;border-radius:18px;padding:22px 24px;box-shadow:var(--shadow-sm);white-space:pre-wrap;line-height:1.45;font-size:clamp(18px,1.55vw,25px);overflow:auto;max-height:310px}pre code{background:transparent;padding:0;color:inherit;font-size:inherit}
     .kicker{display:inline-block;font-family:var(--font-mono);font-size:14px;letter-spacing:.16em;color:var(--terra2);background:rgba(217,115,78,.1);border:1px solid rgba(217,115,78,.28);border-radius:999px;padding:7px 14px;margin-bottom:16px;text-transform:uppercase}.slide-head{margin-bottom:24px}.content-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:30px;align-items:start}.main-copy{background:var(--paper);border:1px solid var(--line);border-radius:22px;padding:32px 38px;box-shadow:var(--shadow-sm);max-width:1120px}.main-copy ul,.main-copy ol{margin:.25em 0;padding-left:1.2em}.main-copy li{margin:.2em 0}.side-notes,.note-card,.task-card{display:none}.panel{border:1px solid var(--line);border-left:8px solid var(--sky);border-radius:20px;background:var(--paper2);padding:22px 24px;box-shadow:var(--shadow-sm);margin-top:16px}.panel-title{font-family:var(--font-mono);font-size:14px;letter-spacing:.14em;color:var(--terra2);margin-bottom:8px;text-transform:uppercase}.leadcopy{font-size:clamp(24px,2.5vw,36px);max-width:900px}.speaker{margin-top:1.2em;color:var(--soft);font-size:clamp(22px,2vw,30px)}.roadmap .main-copy{font-size:1.1em}.bottombar{border:1px solid var(--line);border-radius:18px;background:rgba(255,253,248,.86);box-shadow:var(--shadow-sm);display:flex;align-items:center;justify-content:space-between;padding:0 14px;gap:14px}.controls{display:flex;gap:8px}button{font:600 15px var(--font-mono);border:1px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink);padding:8px 12px;cursor:pointer}button:hover{border-color:var(--terra);color:var(--terra2)}.progress{height:8px;width:min(420px,30vw);border-radius:999px;background:var(--paper2);overflow:hidden}.progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--terra),var(--mustard));transition:width .2s}.counter{font:600 14px var(--font-mono);color:var(--soft)}.notes{display:none;position:absolute;right:28px;top:28px;width:min(460px,42vw);max-height:calc(100% - 56px);overflow:auto;background:rgba(255,253,248,.96);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:22px;color:var(--soft);z-index:5;font-size:18px;line-height:1.5}.notes.show{display:block}.print-url{font-family:var(--font-mono);font-size:15px;color:var(--soft)}
-    @media(max-width:900px){body{overflow:auto}.deck{height:auto;min-height:100%;}.stage{min-height:760px}.slide{padding:32px}.content-grid{grid-template-columns:1fr}.bottombar{position:sticky;bottom:12px}.progress{display:none}}
+    .clawd-hero{display:block;width:clamp(150px,17vw,245px);height:auto;margin:18px auto 8px;filter:drop-shadow(0 14px 24px rgba(120,90,50,.18))}
+    .clawd-corner{position:absolute;right:42px;bottom:68px;width:clamp(125px,15vw,220px);height:auto;filter:drop-shadow(0 14px 22px rgba(120,90,50,.18));pointer-events:none}
+    .slide.with-clawd .content-grid{padding-right:min(250px,22vw)}
+    .slide.with-clawd .main-copy{max-width:850px}
+    @media(max-width:900px){body{overflow:auto}.deck{height:auto;min-height:100%;}.stage{min-height:760px}.slide{padding:32px}.content-grid{grid-template-columns:1fr}.slide.with-clawd .content-grid{padding-right:0}.clawd-corner{display:none}.bottombar{position:sticky;bottom:12px}.progress{display:none}}
 </style>
 </head>
 <body>
@@ -36,6 +40,7 @@
 
           <div class="kicker">STEP 01</div>
           <h1>把 Claude Code 變成你的第二大腦</h1>
+          <img class="clawd-hero" src="assets/Clawd.png" alt="Clawd">
           <div class="leadcopy"><p class="speaker">講者：中山國小林穎俊</p></div>
         
 </section>
@@ -51,7 +56,7 @@
 </div>
         
 </section>
-<section class="slide" data-note="聊天 AI 像臨時顧問。Claude Code 比較像走到你的旁邊，它可以看資料夾、讀規則、建立檔案、修改檔案、連接更多App。
+<section class="slide with-clawd" data-note="聊天 AI 像臨時顧問。Claude Code 比較像走到你的旁邊，它可以看資料夾、讀規則、建立檔案、修改檔案、連接更多App。
 說出自己過去用聊天 AI 最常卡住的地方。
 ---">
 
@@ -68,6 +73,7 @@
 </div>
             </aside>
           </div>
+          <img class="clawd-corner" src="assets/Clawd.png" alt="Clawd">
         
 </section>
 <section class="slide" data-note="對知識工作者來說，Claude Code 的價值不只是寫程式，而是處理結構化文字工作。
@@ -439,7 +445,7 @@ claude</code></pre></div>
           </div>
         
 </section>
-<section class="slide" data-note="如果只是把所有東西丟進資料夾，那叫備份，不叫第二大腦。
+<section class="slide with-clawd" data-note="如果只是把所有東西丟進資料夾，那叫備份，不叫第二大腦。
 區分「備份」和「編譯」。
 ---">
 
@@ -456,6 +462,7 @@ claude</code></pre></div>
 </div>
             </aside>
           </div>
+          <img class="clawd-corner" src="assets/Clawd.png" alt="Clawd">
         
 </section>
 <section class="slide" data-note="不需要把 Git 教成工程課，只要讓知識工作者知道它能保護自己的知識庫。
@@ -616,7 +623,7 @@ description: 針對計畫或文章進行嚴謹訪談，直到達成共同理解�
           </div>
         
 </section>
-<section class="slide" data-note="這個過程能不能轉成skill
+<section class="slide with-clawd" data-note="這個過程能不能轉成skill
 嘗試將文章變成簡報
 ---">
 
@@ -634,6 +641,7 @@ description: 針對計畫或文章進行嚴謹訪談，直到達成共同理解�
 </div>
             </aside>
           </div>
+          <img class="clawd-corner" src="assets/Clawd.png" alt="Clawd">
         
 </section>
 <section class="slide" data-note="這是把今天學到的 Claude Code、第二大腦、評估標準整合起來。
@@ -701,21 +709,20 @@ description: 針對計畫或文章進行嚴謹訪談，直到達成共同理解�
           <h1>結語</h1>
           <div class="leadcopy"><p>你不是在學會操作 Claude Code。</p>
 <p>你是在建立一個能和 AI 一起思考的工作環境。</p></div>
+          <img class="clawd-hero" src="assets/Clawd.png" alt="Clawd">
         
 </section>
-      <aside class="notes" id="notes"></aside>
     </section>
     <footer class="bottombar">
-      <div class="controls"><button id="prev">上一頁</button><button id="next">下一頁</button><button id="noteToggle">備註</button><button id="full">全螢幕</button></div>
+      <div class="controls"><button id="prev">上一頁</button><button id="next">下一頁</button><button id="full">全螢幕</button></div>
       <div class="progress"><span id="progress"></span></div>
-      <div class="counter"><span id="counter">01 / 36</span> ｜ ← → 切換 ｜ N 備註 ｜ F 全螢幕</div>
+      <div class="counter"><span id="counter">01 / 36</span> ｜ ← → 切換 ｜ F 全螢幕</div>
     </footer>
   </main>
   <script>
     const slides = Array.from(document.querySelectorAll('.slide'));
     const progress = document.getElementById('progress');
     const counter = document.getElementById('counter');
-    const notes = document.getElementById('notes');
     let index = 0;
     const pad = n => String(n).padStart(2, '0');
     function show(i){
@@ -723,19 +730,15 @@ description: 針對計畫或文章進行嚴謹訪談，直到達成共同理解�
       slides.forEach((s, n) => s.classList.toggle('active', n === index));
       progress.style.width = `${((index + 1) / slides.length) * 100}%`;
       counter.textContent = `${pad(index + 1)} / ${pad(slides.length)}`;
-      notes.textContent = slides[index].dataset.note || '這頁沒有講者備註。';
       location.hash = `slide-${index + 1}`;
     }
-    function toggleNotes(){ notes.classList.toggle('show'); }
     function full(){ document.fullscreenElement ? document.exitFullscreen?.() : document.documentElement.requestFullscreen?.(); }
     document.getElementById('prev').onclick = () => show(index - 1);
     document.getElementById('next').onclick = () => show(index + 1);
-    document.getElementById('noteToggle').onclick = toggleNotes;
     document.getElementById('full').onclick = full;
     document.addEventListener('keydown', e => {
       if(['ArrowRight','PageDown',' '].includes(e.key)) show(index + 1);
       if(['ArrowLeft','PageUp'].includes(e.key)) show(index - 1);
-      if(e.key.toLowerCase()==='n') toggleNotes();
       if(e.key.toLowerCase()==='f') full();
       if(e.key==='Home') show(0); if(e.key==='End') show(slides.length - 1);
     });
