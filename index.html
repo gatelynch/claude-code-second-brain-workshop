@@ -28,6 +28,12 @@
     .clawd-corner{position:absolute;right:42px;bottom:68px;width:clamp(125px,15vw,220px);height:auto;filter:drop-shadow(0 14px 22px rgba(120,90,50,.18));pointer-events:none}
     .slide.with-clawd .content-grid{padding-right:min(250px,22vw)}
     .slide.with-clawd .main-copy{max-width:850px}
+    .screenshot-frame{margin-top:18px;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--code);box-shadow:var(--shadow-sm)}
+    .screenshot-frame img{display:block;width:100%;height:auto;max-height:300px;object-fit:contain}
+    .screenshot-slide .content-grid{grid-template-columns:minmax(280px,.48fr) minmax(0,1fr);gap:22px;align-items:start}
+    .screenshot-slide .main-copy{max-width:none}
+    .screenshot-slide .screenshot-frame{margin-top:0}
+    .screenshot-slide .screenshot-frame img{max-height:min(360px,46vh)}
     @media(max-width:900px){body{overflow:auto}.deck{height:auto;min-height:100%;}.stage{min-height:760px}.slide{padding:32px}.content-grid{grid-template-columns:1fr}.slide.with-clawd .content-grid{padding-right:0}.clawd-corner{display:none}.bottombar{position:sticky;bottom:12px}.progress{display:none}}
 </style>
 </head>
@@ -174,7 +180,7 @@ claude</code></pre></div>
           </div>
         
 </section>
-<section class="slide" data-note="Claude Code 不是孤立聊天室，它最好和檔案視窗一起使用，看的到檔案怎麼變更。
+<section class="slide screenshot-slide" data-note="Claude Code 不是孤立聊天室，它最好和檔案視窗一起使用，看的到檔案怎麼變更。
 調整自己的工作畫面。
 ---">
 
@@ -185,6 +191,7 @@ claude</code></pre></div>
           <div class="content-grid">
             <div class="main-copy"><p>建議工作畫面：</p>
 <ul><li>左邊：檔案總管 / VS Code</li><li>右邊：Claude Code</li><li>中間：筆記或程式</li></ul></div>
+            <div class="screenshot-frame"><img src="assets/vscode-interface.png" alt="VS Code 介面截圖"></div>
             <aside class="side-notes">
               <div class="note-card"><div class="note-label">講者重點</div><p>Claude Code 不是孤立聊天室，它最好和檔案視窗一起使用，看的到檔案怎麼變更。</p></div>
               <div class="task-card"><div class="task-label">學員動作</div><p>調整自己的工作畫面。</p>
