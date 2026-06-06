@@ -34,6 +34,10 @@
     .screenshot-slide .main-copy{max-width:none}
     .screenshot-slide .screenshot-frame{margin-top:0}
     .screenshot-slide .screenshot-frame img{max-height:min(360px,46vh)}
+    .compact-slide .slide-head{margin-bottom:14px}
+    .compact-slide .main-copy{padding:24px 30px}
+    .compact-slide p,.compact-slide li{font-size:clamp(20px,1.75vw,27px);line-height:1.34}
+    .compact-slide .panel{padding:16px 20px;margin-top:12px}
     @media(max-width:900px){body{overflow:auto}.deck{height:auto;min-height:100%;}.stage{min-height:760px}.slide{padding:32px}.content-grid{grid-template-columns:1fr}.slide.with-clawd .content-grid{padding-right:0}.clawd-corner{display:none}.bottombar{position:sticky;bottom:12px}.progress{display:none}}
 </style>
 </head>
@@ -337,7 +341,7 @@ claude</code></pre></div>
           </div>
         
 </section>
-<section class="slide" data-note="CLAUDE.md 不是一次寫完的文件，而是協作中長出來的記憶。
+<section class="slide compact-slide" data-note="CLAUDE.md 不是一次寫完的文件，而是協作中長出來的記憶。
 找出範例 CLAUDE.md 中最重要的三條規則。
 ---">
 
@@ -347,7 +351,8 @@ claude</code></pre></div>
           </div>
           <div class="content-grid">
             <div class="main-copy"><p>四個原則：</p>
-<ol><li>不要太長</li><li>隨錯誤迭代</li><li>模組化</li><li>和 Claude Code 一起寫</li></ol></div>
+<ol><li>不要太長</li><li>隨錯誤迭代</li><li>模組化</li><li>和 Claude Code 一起寫</li></ol>
+<div class="panel"><div class="panel-title">指令</div><p><code>/init-llm</code> 詢問你的個人資料與偏好、掃描現有檔案、提出整理計畫，並設定 <code>CLAUDE.md</code></p></div></div>
             <aside class="side-notes">
               <div class="note-card"><div class="note-label">講者重點</div><p><code>CLAUDE.md</code> 不是一次寫完的文件，而是協作中長出來的記憶。</p></div>
               <div class="task-card"><div class="task-label">學員動作</div><p>找出範例 <code>CLAUDE.md</code> 中最重要的三條規則。</p>
