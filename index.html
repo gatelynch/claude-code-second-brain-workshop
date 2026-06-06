@@ -1,0 +1,967 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Claude Code 第二大腦工作坊</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DotGothic16&amp;family=Press+Start+2P&amp;display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #050806;
+      --panel: #08130d;
+      --panel-2: #0d2114;
+      --grid: rgba(98, 255, 139, .055);
+      --line: #1f6f3a;
+      --line-2: rgba(98, 255, 139, .35);
+      --green: #65ff8f;
+      --green-2: #27d75c;
+      --amber: #ffd166;
+      --blue: #62d9ff;
+      --red: #ff5f56;
+      --muted: #88a992;
+      --dim: #42604b;
+      --black: #020403;
+      --shadow: 0 0 32px rgba(98, 255, 139, .12);
+    }
+
+    * { box-sizing: border-box; }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      background: var(--black);
+      color: var(--green);
+      font-family: "DotGothic16", "Noto Sans TC", "PingFang TC", monospace;
+      letter-spacing: 0;
+      overflow: hidden;
+    }
+
+    body {
+      background:
+        linear-gradient(rgba(98,255,139,.025) 50%, rgba(0,0,0,.08) 50%) 0 0 / 100% 6px,
+        radial-gradient(circle at 84% 10%, rgba(98,255,139,.16), transparent 30%),
+        radial-gradient(circle at 8% 88%, rgba(98,217,255,.09), transparent 28%),
+        var(--bg);
+    }
+
+    .deck {
+      min-height: 100%;
+      display: grid;
+      grid-template-rows: 42px 1fr 46px;
+      padding: 18px;
+      gap: 14px;
+    }
+
+    .topbar,
+    .bottombar {
+      border: 2px solid var(--line);
+      background: rgba(2, 8, 4, .72);
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      position: relative;
+      z-index: 5;
+    }
+
+    .topbar {
+      justify-content: space-between;
+      padding: 0 18px;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .window-dots {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .dot {
+      width: 11px;
+      height: 11px;
+      display: inline-block;
+      box-shadow: 0 0 8px currentColor;
+    }
+
+    .dot.red { background: var(--red); color: var(--red); }
+    .dot.yellow { background: var(--amber); color: var(--amber); }
+    .dot.green { background: var(--green); color: var(--green); }
+
+    .path {
+      color: var(--green);
+      text-shadow: 0 0 8px rgba(98,255,139,.35);
+    }
+
+    .meta {
+      font-family: "Press Start 2P", monospace;
+      font-size: 10px;
+      color: var(--dim);
+    }
+
+    .stage {
+      position: relative;
+      border: 2px solid var(--line);
+      background:
+        linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0 / 34px 34px,
+        linear-gradient(var(--grid) 1px, transparent 1px) 0 0 / 34px 34px,
+        rgba(2, 8, 4, .8);
+      box-shadow: inset 0 0 60px rgba(98,255,139,.08), var(--shadow);
+      overflow: hidden;
+    }
+
+    .slide {
+      display: none;
+      width: 100%;
+      height: 100%;
+      padding: clamp(34px, 5vw, 72px);
+      position: absolute;
+      inset: 0;
+    }
+
+    .slide.active {
+      display: grid;
+      animation: enter .22s ease-out;
+    }
+
+    @keyframes enter {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .center { place-items: center; text-align: center; }
+    .split { grid-template-columns: 1fr 1fr; gap: 34px; align-items: center; }
+    .stack { align-content: center; gap: 26px; }
+    .top { align-content: start; gap: 24px; }
+
+    .eyebrow {
+      color: var(--blue);
+      font-family: "Press Start 2P", "DotGothic16", monospace;
+      font-size: clamp(10px, 1.1vw, 14px);
+      line-height: 1.7;
+      margin-bottom: 18px;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3,
+    p,
+    ul,
+    ol {
+      margin: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    h1 {
+      color: var(--green);
+      font-weight: 400;
+      font-size: clamp(54px, 7.2vw, 112px);
+      line-height: 1.05;
+      text-shadow: 0 0 16px rgba(98,255,139,.28);
+    }
+
+    h2 {
+      color: var(--amber);
+      font-weight: 400;
+      font-size: clamp(34px, 4.4vw, 68px);
+      line-height: 1.12;
+      text-shadow: 0 0 14px rgba(255,209,102,.18);
+    }
+
+    h3 {
+      color: var(--blue);
+      font-weight: 400;
+      font-size: clamp(22px, 2.4vw, 36px);
+      line-height: 1.22;
+    }
+
+    p,
+    li {
+      color: var(--green);
+      font-size: clamp(23px, 2.4vw, 36px);
+      line-height: 1.35;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .small {
+      color: var(--muted);
+      font-size: clamp(18px, 1.7vw, 25px);
+      line-height: 1.45;
+    }
+
+    .terminal {
+      border: 2px solid var(--line);
+      background: rgba(2, 8, 4, .92);
+      box-shadow: var(--shadow);
+      width: min(1040px, 100%);
+    }
+
+    .terminal .bar {
+      height: 38px;
+      border-bottom: 2px solid var(--line);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 14px;
+      color: var(--dim);
+      font-size: 15px;
+    }
+
+    .terminal .title {
+      margin-left: 10px;
+      color: var(--muted);
+    }
+
+    .terminal .screen {
+      padding: clamp(24px, 3vw, 42px);
+    }
+
+    .prompt {
+      display: block;
+      color: var(--green);
+      font-size: clamp(24px, 2.6vw, 42px);
+      line-height: 1.4;
+    }
+
+    .prompt::before {
+      content: "mimi@second-brain:~$ ";
+      color: var(--amber);
+    }
+
+    .cursor::after {
+      content: "█";
+      color: var(--green);
+      animation: blink 1s steps(1) infinite;
+      margin-left: .18em;
+    }
+
+    @keyframes blink {
+      0%, 48% { opacity: 1; }
+      49%, 100% { opacity: 0; }
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .cards.two {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .card {
+      border: 2px solid var(--line);
+      background: rgba(98, 255, 139, .04);
+      padding: 24px;
+      min-height: 148px;
+      box-shadow: inset 0 0 24px rgba(98,255,139,.04);
+    }
+
+    .card .num {
+      color: var(--amber);
+      font-family: "Press Start 2P", monospace;
+      font-size: 16px;
+      display: block;
+      margin-bottom: 16px;
+    }
+
+    .card h3 {
+      margin-bottom: 10px;
+    }
+
+    .card p {
+      color: var(--muted);
+      font-size: clamp(19px, 1.7vw, 26px);
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .flow-item {
+      border: 2px solid var(--line);
+      background: rgba(2, 8, 4, .88);
+      padding: 22px 12px;
+      text-align: center;
+      position: relative;
+      min-height: 116px;
+      display: grid;
+      place-items: center;
+      color: var(--green);
+      font-size: clamp(22px, 2.1vw, 32px);
+    }
+
+    .flow-item:not(:last-child)::after {
+      content: ">";
+      color: var(--amber);
+      position: absolute;
+      right: -16px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 2;
+      font-size: 28px;
+    }
+
+    .code {
+      border: 2px solid var(--line);
+      background: #020503;
+      color: var(--green);
+      padding: 24px;
+      white-space: pre-wrap;
+      font-size: clamp(19px, 1.7vw, 27px);
+      line-height: 1.42;
+      box-shadow: var(--shadow);
+    }
+
+    .code .amber { color: var(--amber); }
+    .code .blue { color: var(--blue); }
+
+    .checklist {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px 24px;
+      list-style: none;
+      padding: 0;
+    }
+
+    .checklist li::before {
+      content: "[ ] ";
+      color: var(--amber);
+    }
+
+    .bottombar {
+      justify-content: space-between;
+      padding: 0 16px;
+      color: var(--muted);
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    button {
+      font-family: inherit;
+      font-size: 16px;
+      color: var(--green);
+      background: transparent;
+      border: 1px solid var(--line);
+      padding: 5px 10px 7px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: rgba(98,255,139,.08);
+      border-color: var(--green);
+    }
+
+    .progress {
+      height: 7px;
+      width: min(360px, 28vw);
+      border: 1px solid var(--line);
+      background: rgba(98,255,139,.06);
+      overflow: hidden;
+    }
+
+    .progress span {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: var(--green);
+      box-shadow: 0 0 16px rgba(98,255,139,.55);
+      transition: width .2s ease;
+    }
+
+    .kbd {
+      color: var(--dim);
+      font-size: 15px;
+    }
+
+    .notes {
+      position: absolute;
+      right: 26px;
+      top: 62px;
+      z-index: 10;
+      width: min(440px, 42vw);
+      max-height: calc(100% - 124px);
+      overflow: auto;
+      border: 2px solid var(--line);
+      background: rgba(2, 8, 4, .96);
+      color: var(--muted);
+      padding: 20px;
+      display: none;
+      box-shadow: var(--shadow);
+      font-size: 18px;
+      line-height: 1.45;
+    }
+
+    .notes.show { display: block; }
+
+    .quote {
+      color: var(--amber);
+      font-size: clamp(34px, 4.1vw, 64px);
+      line-height: 1.2;
+      text-align: center;
+    }
+
+    .stamp {
+      display: inline-block;
+      border: 2px solid var(--red);
+      color: var(--red);
+      padding: 10px 16px 13px;
+      transform: rotate(-3deg);
+      font-size: clamp(18px, 2vw, 30px);
+      margin-bottom: 18px;
+    }
+
+    @media (max-width: 900px) {
+      body { overflow: auto; }
+      .deck { min-height: 100vh; }
+      .stage { min-height: 640px; }
+      .split, .cards, .cards.two, .checklist { grid-template-columns: 1fr; }
+      .flow { grid-template-columns: 1fr; }
+      .flow-item:not(:last-child)::after { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="deck">
+    <div class="topbar">
+      <div class="window-dots">
+        <span class="dot red"></span>
+        <span class="dot yellow"></span>
+        <span class="dot green"></span>
+        <span class="path">~/workshop/claude-code-second-brain</span>
+      </div>
+      <div class="meta">PIXEL TERMINAL DECK</div>
+    </div>
+
+    <div class="stage" id="stage" aria-live="polite">
+      <div class="slide center active" data-note="開場時先定調：今天不是學一個工具，而是建立一個能和 AI 長期協作的知識工作現場。">
+        <div class="terminal">
+          <div class="bar"><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span><span class="title">boot.sh</span></div>
+          <div class="screen">
+            <div class="eyebrow">WORKSHOP / CLAUDE CODE</div>
+            <h1>第二大腦<br>工作坊</h1>
+            <span class="prompt cursor">從散落資料到能與 AI 一起思考的知識系統</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide top" data-note="把完成品講清楚，讓學員知道這不是聽講，而是會一段一段把自己的系統做出來。">
+        <div>
+          <div class="eyebrow">MISSION</div>
+          <h2>今天結束前，你會帶走一個可以繼續長大的系統</h2>
+        </div>
+        <div class="cards">
+          <div class="card"><span class="num">01</span><h3>資料夾骨架</h3><p>raw / wiki / brainstorming / artifacts</p></div>
+          <div class="card"><span class="num">02</span><h3>合作契約</h3><p>第一版 CLAUDE.md</p></div>
+          <div class="card"><span class="num">03</span><h3>真實資料</h3><p>放入自己的 3 到 5 份 raw</p></div>
+          <div class="card"><span class="num">04</span><h3>編譯知識</h3><p>產出第一份 wiki 摘要</p></div>
+          <div class="card"><span class="num">05</span><h3>思考沉澱</h3><p>保存一次 brainstorming</p></div>
+          <div class="card"><span class="num">06</span><h3>固定流程</h3><p>完成一份 Skill 草稿</p></div>
+        </div>
+      </div>
+
+      <div class="slide center" data-note="從第一性原理說明：AI 要穩定工作，需要看得到資料、理解結構、知道偏好、知道評估標準。">
+        <div>
+          <div class="eyebrow">PRINCIPLE</div>
+          <h1>不是工具<br>是系統</h1>
+          <p class="muted">工具會變，系統會留下。</p>
+        </div>
+      </div>
+
+      <div class="slide top" data-note="這頁讓學員連結自己的痛點。可以請他們在紙上寫下最常散落的三個地方。">
+        <div>
+          <div class="eyebrow">PROBLEM</div>
+          <h2>知識工作者不缺資料，缺的是再次使用資料的能力</h2>
+        </div>
+        <div class="cards two">
+          <div class="card"><h3>資料很多</h3><p>Drive、Notion、Obsidian、Line、PDF、貼文、會議記錄、課程靈感。</p></div>
+          <div class="card"><h3>再次使用很難</h3><p>找不到、連不起來、轉不成下一個作品。</p></div>
+        </div>
+        <p class="prompt">資料不能被找回、連結、轉化，就只是倉庫。</p>
+      </div>
+
+      <div class="slide center" data-note="把第二大腦和資料庫區分開。重點不是保存一切，而是讓重要材料回到思考流程。">
+        <div>
+          <div class="eyebrow">SECOND BRAIN != DATABASE</div>
+          <p class="quote">第二大腦不是保存一切，<br>而是讓重要材料重新參與思考。</p>
+        </div>
+      </div>
+
+      <div class="slide top" data-note="這是整堂課最重要的圖。請強調先用流程階段分類，不急著追求漂亮主題分類。">
+        <div>
+          <div class="eyebrow">PIPELINE</div>
+          <h2>從散落資料到知識系統</h2>
+        </div>
+        <div class="flow">
+          <div class="flow-item">散落資料</div>
+          <div class="flow-item">raw</div>
+          <div class="flow-item">wiki</div>
+          <div class="flow-item">brainstorming</div>
+          <div class="flow-item">artifacts</div>
+        </div>
+        <p class="small">先判斷資料在哪個階段，再決定 AI 該怎麼處理。</p>
+      </div>
+
+      <div class="slide top" data-note="第一個小練習，讓學員把抽象問題變成自己的清單。">
+        <div>
+          <div class="eyebrow">RUN TASK 00</div>
+          <h2>畫出你的資料散落地圖</h2>
+        </div>
+        <div class="code">mimi@second-brain:~$ list-my-data
+
+1. ____________________
+2. ____________________
+3. ____________________
+4. ____________________
+5. ____________________</div>
+      </div>
+
+      <div class="slide center" data-note="重新定義 Claude Code：不是只能寫程式，而是能在資料夾中工作的 agent。">
+        <div>
+          <div class="eyebrow">WHY CLAUDE CODE</div>
+          <h1>它不是只能寫程式</h1>
+          <p class="muted">它是能進入你的資料夾工作的 AI agent。</p>
+        </div>
+      </div>
+
+      <div class="slide split" data-note="用一個簡單對照讓新手理解 Claude Code 與一般聊天 AI 的差異。">
+        <div>
+          <div class="eyebrow">CHAT AI</div>
+          <h2>臨時顧問</h2>
+          <p class="muted">你問一次，它答一次。下次常常重新開始。</p>
+        </div>
+        <div>
+          <div class="eyebrow">CLAUDE CODE</div>
+          <h2>進入工作室的夥伴</h2>
+          <p class="muted">它能看資料夾、讀規則、建立檔案、累積工作流程。</p>
+        </div>
+      </div>
+
+      <div class="slide top" data-note="這頁不要講太技術。讓學員知道它對知識工作的價值。">
+        <div>
+          <div class="eyebrow">CAPABILITY</div>
+          <h2>Claude Code 的五個關鍵能力</h2>
+        </div>
+        <div class="cards">
+          <div class="card"><h3>讀資料</h3><p>看見本機檔案。</p></div>
+          <div class="card"><h3>懂脈絡</h3><p>理解資料夾規則。</p></div>
+          <div class="card"><h3>建檔案</h3><p>依規則輸出。</p></div>
+          <div class="card"><h3>跑流程</h3><p>讓重複任務穩定。</p></div>
+          <div class="card"><h3>接工具</h3><p>透過 MCP 擴充。</p></div>
+          <div class="card"><h3>可迭代</h3><p>把錯誤寫回規則。</p></div>
+        </div>
+      </div>
+
+      <div class="slide center" data-note="誠實說安裝會卡，但不要把焦點放在背指令。課前要確認官方文件。">
+        <div>
+          <span class="stamp">WARNING</span>
+          <h2>安裝只是門檻，不是課程核心</h2>
+          <p class="prompt">不要背指令，要理解你正在建立工作現場。</p>
+          <p class="small">上課前請依 Anthropic 官方文件確認最新安裝方式。</p>
+        </div>
+      </div>
+
+      <div class="slide top" data-note="用兩行指令呈現概念即可，不要讓新手被終端機嚇到。">
+        <div>
+          <div class="eyebrow">FIRST RUN</div>
+          <h2>第一次打開 Claude Code</h2>
+        </div>
+        <div class="code"><span class="amber">$</span> cd my-second-brain
+<span class="amber">$</span> claude</div>
+        <p class="prompt">你在哪個資料夾啟動，它就在哪個工作現場協作。</p>
+      </div>
+
+      <div class="slide center" data-note="轉入 Context Engineering。這是整堂課的核心方法論之一。">
+        <div>
+          <div class="eyebrow">CONTEXT ENGINEERING</div>
+          <h1>Prompt 是一句話</h1>
+          <p class="quote">Context 是整個工作現場。</p>
+        </div>
+      </div>
+
+      <div class="slide top" data-note="讓學員理解 context 包含資料、規則、過去工作與評估標準。">
+        <div>
+          <div class="eyebrow">DESIGN THE ROOM</div>
+          <h2>設計 AI 看見什麼、忽略什麼、如何判斷</h2>
+        </div>
+        <div class="cards two">
+          <div class="card"><h3>Prompt</h3><p>你現在對 AI 說的一句話。</p></div>
+          <div class="card"><h3>Context</h3><p>它能看見的資料、規則、過去工作、品質標準。</p></div>
+        </div>
+      </div>
+
+      <div class="slide split" data-note="降低 Markdown 的心理門檻。只教三個符號就夠了。">
+        <div>
+          <div class="eyebrow">MARKDOWN</div>
+          <h2>Markdown 是 AI 的母語</h2>
+          <p class="muted">純文字容易保存、搜尋、版本控制，也容易被 AI 理解。</p>
+        </div>
+        <div class="code"><span class="blue">#</span> 標題
+<span class="blue">-</span> 清單
+<span class="blue">**</span>重點<span class="blue">**</span></div>
+      </div>
+
+      <div class="slide top" data-note="資料夾不是收納術，而是在告訴 AI 這份資料的角色。">
+        <div>
+          <div class="eyebrow">FOLDER AS THINKING</div>
+          <h2>資料夾是一種思考設計</h2>
+        </div>
+        <p class="prompt">資料夾不是收納術。</p>
+        <p class="prompt">資料夾是在告訴 AI：這份資料現在扮演什麼角色。</p>
+      </div>
+
+      <div class="slide top" data-note="第一個主要實作。讓學員建立最小可用骨架。">
+        <div>
+          <div class="eyebrow">RUN TASK 01</div>
+          <h2>建立第二大腦骨架</h2>
+        </div>
+        <div class="code">my-second-brain/
+├── raw/
+├── wiki/
+├── brainstorming/
+├── artifacts/
+└── attachments/</div>
+      </div>
+
+      <div class="slide center" data-note="CLAUDE.md 是這堂課另一個核心。把它稱為合作契約，避免新手以為只是設定檔。">
+        <div>
+          <div class="eyebrow">CLAUDE.MD</div>
+          <h1>合作契約</h1>
+          <p class="muted">不是自傳，也不是願望清單。</p>
+        </div>
+      </div>
+
+      <div class="slide top" data-note="說明 CLAUDE.md 裡要放哪些資訊。">
+        <div>
+          <div class="eyebrow">MEMORY FILE</div>
+          <h2>讓 AI 知道這個工作現場怎麼運作</h2>
+        </div>
+        <div class="cards">
+          <div class="card"><h3>我是誰</h3><p>背景、工作、常見產出。</p></div>
+          <div class="card"><h3>怎麼對話</h3><p>語言、稱呼、提問規則。</p></div>
+          <div class="card"><h3>資料怎麼放</h3><p>資料夾結構與命名。</p></div>
+          <div class="card"><h3>什麼不能動</h3><p>raw 不覆蓋，避免破壞原始資料。</p></div>
+          <div class="card"><h3>怎樣算好</h3><p>品質標準與完成條件。</p></div>
+          <div class="card"><h3>如何迭代</h3><p>AI 做錯，就補規則。</p></div>
+        </div>
+      </div>
+
+      <div class="slide top" data-note="直接給可複製的訪談 prompt。">
+        <div>
+          <div class="eyebrow">RUN TASK 02</div>
+          <h2>建立第一版 CLAUDE.md</h2>
+        </div>
+        <div class="code">請你先訪談我，協助我建立這個第二大腦資料夾的 CLAUDE.md。
+一次只問一個問題。
+請釐清我的身分、主要工作、常見產出、資料來源、
+資料夾規則、命名慣例、AI 協作偏好與禁止事項。
+訪談完成後，產出一份精簡、可維護的 CLAUDE.md。</div>
+      </div>
+
+      <div class="slide center" data-note="提醒來源判斷的重要性，尤其是 AI 生成內容混入資料庫會污染判斷。">
+        <div>
+          <div class="eyebrow">DATA INTAKE</div>
+          <h2>資料進系統前，先判斷來源</h2>
+          <div class="cards">
+            <div class="card"><h3>我寫的</h3><p>代表我的想法與經驗。</p></div>
+            <div class="card"><h3>別人寫的</h3><p>需要保留來源脈絡。</p></div>
+            <div class="card"><h3>AI 生成</h3><p>避免污染自己的觀點。</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide top" data-note="帶入 convert-to-md 想法，作為未來 Skill。">
+        <div>
+          <div class="eyebrow">CONVERT</div>
+          <h2>先把資料變成 AI 容易讀的格式</h2>
+        </div>
+        <div class="flow">
+          <div class="flow-item">PDF</div>
+          <div class="flow-item">DOCX</div>
+          <div class="flow-item">網頁</div>
+          <div class="flow-item">FB JSON</div>
+          <div class="flow-item">Markdown</div>
+        </div>
+        <p class="small">PDF 圖片與版面可能不準，轉完要檢查文字與來源。</p>
+      </div>
+
+      <div class="slide center" data-note="這頁是你原始筆記裡很有價值的反思。備份和編譯要分開。">
+        <div>
+          <span class="stamp">CAUTION</span>
+          <h2>不是所有過去的自己，都適合被編譯進現在的系統</h2>
+          <p class="prompt">備份可以很廣，編譯必須選擇。</p>
+        </div>
+      </div>
+
+      <div class="slide top" data-note="逐一講四層資料夾的原則。">
+        <div>
+          <div class="eyebrow">FOUR LAYERS</div>
+          <h2>四層工作原則</h2>
+        </div>
+        <div class="cards">
+          <div class="card"><h3>raw</h3><p>原始資料，只進不改。</p></div>
+          <div class="card"><h3>wiki</h3><p>整理後、可再次使用的知識。</p></div>
+          <div class="card"><h3>brainstorming</h3><p>保存推理、追問、取捨。</p></div>
+          <div class="card"><h3>artifacts</h3><p>文章、簡報、教案、企劃。</p></div>
+          <div class="card"><h3>attachments</h3><p>圖片、PDF、音檔等附件。</p></div>
+          <div class="card"><h3>indexes</h3><p>幫人和 AI 導航。</p></div>
+        </div>
+      </div>
+
+      <div class="slide top" data-note="實作第一份 wiki 摘要，強調不要修改 raw。">
+        <div>
+          <div class="eyebrow">RUN TASK 03</div>
+          <h2>編譯第一份 wiki 摘要</h2>
+        </div>
+        <div class="code">請讀取 raw/ 中我指定的這份資料，
+產出一份 wiki/summaries/ 摘要。
+
+摘要請包含：
+1. 原始資料路徑
+2. 核心問題
+3. 三到五個重點
+4. 可發展的概念條目
+5. 我未來可能如何使用這份資料
+
+不要修改 raw/ 原始檔。</div>
+      </div>
+
+      <div class="slide center" data-note="把 brainstorming 的價值說清楚：保存思考過程，而不只是最後答案。">
+        <div>
+          <div class="eyebrow">BRAINSTORMING</div>
+          <p class="quote">不要只保存答案，<br>也要保存你如何抵達答案。</p>
+        </div>
+      </div>
+
+      <div class="slide top" data-note="實作沉澱一次 brainstorming。">
+        <div>
+          <div class="eyebrow">RUN TASK 04</div>
+          <h2>沉澱一次思考對話</h2>
+        </div>
+        <div class="code">請根據目前資料夾中的資料，和我討論以下問題：
+「......」
+
+請先提出你需要釐清的問題。
+討論完成後，請把推理過程、關鍵結論、
+未解問題與下一步，整理到 brainstorming/chat/。</div>
+      </div>
+
+      <div class="slide center" data-note="收束到 artifacts。第二大腦不是為整理而整理，最後要產出。">
+        <div>
+          <div class="eyebrow">ARTIFACTS</div>
+          <h1>最後要回到產出</h1>
+          <p class="muted">文章、簡報、教案、企劃、研究報告。</p>
+        </div>
+      </div>
+
+      <div class="slide top" data-note="進入 Skill，從一次任務到固定工作流。">
+        <div>
+          <div class="eyebrow">SKILL</div>
+          <h2>當你重複做同一件事，就該把它變成流程</h2>
+        </div>
+        <div class="cards two">
+          <div class="card"><h3>一次任務</h3><p>幫我整理這篇文章。</p></div>
+          <div class="card"><h3>固定流程</h3><p>每次都依來源、摘要、概念、用途整理。</p></div>
+        </div>
+      </div>
+
+      <div class="slide top" data-note="解釋兩種 Skill。不要讓學員追求很多 Skill。">
+        <div>
+          <div class="eyebrow">TWO TYPES</div>
+          <h2>Skill 不是越多越好</h2>
+        </div>
+        <div class="cards two">
+          <div class="card"><h3>工作流 Skill</h3><p>整理會議、編輯文章、建立學習專案、資料轉 Markdown。</p></div>
+          <div class="card"><h3>領域知識 Skill</h3><p>課程設計、論證審查、規格驅動、測試驅動。</p></div>
+        </div>
+        <p class="prompt">它要來自你真的反覆需要的任務。</p>
+      </div>
+
+      <div class="slide top" data-note="給出 ask-me 範例，這和使用者希望先提問再執行的習慣一致。">
+        <div>
+          <div class="eyebrow">FIRST SKILL</div>
+          <h2>ask-me：請 AI 先問清楚，再開始做</h2>
+        </div>
+        <div class="code">---
+name: ask-me
+description: 針對計畫或文章進行嚴謹訪談，直到達成共同理解。
+---
+
+請針對此想法的各個面向對我進行訪談。
+一次只問一個問題。
+如果問題可以透過探索資料夾回答，請先探索資料夾。</div>
+      </div>
+
+      <div class="slide center" data-note="Evaluation 是讓 AI 穩定的重要觀念。沒有標準，AI 只能猜。">
+        <div>
+          <div class="eyebrow">EVALUATION</div>
+          <h1>沒有評估標準</h1>
+          <p class="quote">AI 只能猜。</p>
+        </div>
+      </div>
+
+      <div class="slide top" data-note="給出簡單摘要評估標準，讓學員照著寫自己的三條標準。">
+        <div>
+          <div class="eyebrow">GOOD SUMMARY</div>
+          <h2>一份好的摘要要有什麼？</h2>
+        </div>
+        <ul class="checklist">
+          <li>來源</li>
+          <li>核心論點</li>
+          <li>關鍵概念</li>
+          <li>可延伸問題</li>
+          <li>未來用途</li>
+          <li>不確定處標註假設</li>
+        </ul>
+      </div>
+
+      <div class="slide center" data-note="平行處理：AI 負責展開可能性，人負責判斷。">
+        <div>
+          <div class="eyebrow">PARALLEL PROCESSING</div>
+          <h2>不要只要一個答案</h2>
+          <p class="prompt">請 AI 同時探索多條路，再一起比較。</p>
+        </div>
+      </div>
+
+      <div class="slide top" data-note="提醒 context window 有限制，所以資料夾、索引、摘要都是幫 AI 導航。">
+        <div>
+          <div class="eyebrow">CONTEXT WINDOW</div>
+          <h2>AI 不是無限記憶</h2>
+        </div>
+        <div class="cards">
+          <div class="card"><h3>資料夾</h3><p>降低混亂。</p></div>
+          <div class="card"><h3>摘要</h3><p>降低負擔。</p></div>
+          <div class="card"><h3>索引</h3><p>幫 AI 導航。</p></div>
+        </div>
+        <p class="prompt">系統設計，就是幫 AI 看見該看的東西。</p>
+      </div>
+
+      <div class="slide top" data-note="總實作檢核表。可以在最後請學員逐項打勾。">
+        <div>
+          <div class="eyebrow">FINAL CHECK</div>
+          <h2>工作坊總檢核</h2>
+        </div>
+        <ul class="checklist">
+          <li>建立第二大腦主資料夾</li>
+          <li>建立 raw / wiki / brainstorming / artifacts</li>
+          <li>放入至少 3 份真實 raw 資料</li>
+          <li>完成第一版 CLAUDE.md</li>
+          <li>編譯一份 wiki 摘要</li>
+          <li>沉澱一份 brainstorming</li>
+          <li>產出一份 artifact</li>
+          <li>完成一份 Skill 草稿</li>
+        </ul>
+      </div>
+
+      <div class="slide top" data-note="避免學員回去後想整理一生，結果失敗。要縮小成一個下週會用到的流程。">
+        <div>
+          <div class="eyebrow">NEXT WEEK</div>
+          <h2>不要立刻整理一生</h2>
+        </div>
+        <p class="prompt">先讓一個工作流程跑起來。</p>
+        <div class="cards two">
+          <div class="card"><h3>閱讀</h3><p>每週整理三篇筆記。</p></div>
+          <div class="card"><h3>會議</h3><p>每次沉澱一份 brainstorming。</p></div>
+          <div class="card"><h3>寫作</h3><p>每週產出一篇文章大綱。</p></div>
+          <div class="card"><h3>課程</h3><p>每次靈感先進 raw 再編譯。</p></div>
+        </div>
+      </div>
+
+      <div class="slide center" data-note="結語。回扣這不是學操作，而是建立能和 AI 一起思考的環境。">
+        <div>
+          <div class="eyebrow">SHUTDOWN MESSAGE</div>
+          <p class="quote">你不是在學會操作 Claude Code。<br><br>你是在建立一個能和 AI 一起思考的工作環境。</p>
+        </div>
+      </div>
+
+      <div class="slide center" data-note="最後一頁停在這句話。">
+        <div class="terminal">
+          <div class="bar"><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span><span class="title">next-step.txt</span></div>
+          <div class="screen">
+            <span class="prompt cursor">真正的第二大腦，會從你下週開始使用它的那一刻長出來</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="notes" id="notes"></div>
+    </div>
+
+    <div class="bottombar">
+      <div class="controls">
+        <button type="button" id="prev" aria-label="上一頁">PREV</button>
+        <button type="button" id="next" aria-label="下一頁">NEXT</button>
+        <button type="button" id="noteToggle" aria-label="顯示講者備註">NOTES</button>
+        <button type="button" id="full" aria-label="全螢幕">FULL</button>
+      </div>
+      <div class="progress" aria-hidden="true"><span id="progress"></span></div>
+      <div class="kbd"><span id="counter">01/01</span> ｜ ← → 切換 ｜ N 備註 ｜ F 全螢幕</div>
+    </div>
+  </div>
+
+  <script>
+    const slides = Array.from(document.querySelectorAll(".slide"));
+    const progress = document.getElementById("progress");
+    const counter = document.getElementById("counter");
+    const notes = document.getElementById("notes");
+    let index = 0;
+
+    function pad(num) {
+      return String(num).padStart(2, "0");
+    }
+
+    function show(nextIndex) {
+      index = Math.max(0, Math.min(slides.length - 1, nextIndex));
+      slides.forEach((slide, i) => slide.classList.toggle("active", i === index));
+      const pct = ((index + 1) / slides.length) * 100;
+      progress.style.width = `${pct}%`;
+      counter.textContent = `${pad(index + 1)}/${pad(slides.length)}`;
+      notes.textContent = slides[index].dataset.note || "這頁沒有講者備註。";
+      location.hash = `slide-${index + 1}`;
+    }
+
+    function toggleNotes() {
+      notes.classList.toggle("show");
+    }
+
+    function toggleFullScreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen?.();
+      } else {
+        document.exitFullscreen?.();
+      }
+    }
+
+    document.getElementById("prev").addEventListener("click", () => show(index - 1));
+    document.getElementById("next").addEventListener("click", () => show(index + 1));
+    document.getElementById("noteToggle").addEventListener("click", toggleNotes);
+    document.getElementById("full").addEventListener("click", toggleFullScreen);
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowRight" || event.key === "PageDown" || event.key === " ") show(index + 1);
+      if (event.key === "ArrowLeft" || event.key === "PageUp") show(index - 1);
+      if (event.key.toLowerCase() === "n") toggleNotes();
+      if (event.key.toLowerCase() === "f") toggleFullScreen();
+      if (event.key === "Home") show(0);
+      if (event.key === "End") show(slides.length - 1);
+    });
+
+    const match = location.hash.match(/slide-(\d+)/);
+    show(match ? Number(match[1]) - 1 : 0);
+  </script>
+</body>
+</html>
